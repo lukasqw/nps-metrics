@@ -61,7 +61,7 @@ const GoogleIcon = () => (
 );
 
 const LoginForm = () => (
-  <div className="mx-auto grid lg:w-[400px] gap-6">
+  <div className="mx-auto grid lg:w-[400px] gap-6 py-10">
     <div className="grid gap-2 ">
       <h1 className="text-3xl font-bold">Bem vindo de volta</h1>
       <p className="text-muted-foreground">
