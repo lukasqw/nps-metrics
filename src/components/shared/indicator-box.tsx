@@ -18,7 +18,7 @@ export function IndicatorBox({ data, children }: IndicatorBoxProps) {
 
   return (
     <Card className="p-0 flex flex-col justify-between">
-      <div className="p-4 gap-2">
+      <div className="p-4 pb-1 gap-2">
         <div>
           <h2 className="text-lg font-bold">{data.title}</h2>
           {data.subtitle && (
