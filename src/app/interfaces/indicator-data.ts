@@ -5,4 +5,6 @@ export interface IndicatorData {
   variation: number;
   typeValue?: "percent" | "absolute";
   typeVariation?: "percent" | "absolute";
+  chartData?: { [key: string]: number }[];
+  chartColor: string;
 }

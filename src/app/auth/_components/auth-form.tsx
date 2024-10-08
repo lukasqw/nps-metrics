@@ -92,14 +92,13 @@ const LoginForm = () => (
       <Button type="submit" className="w-full">
         Login
       </Button>
-      <Button variant="outline" className="w-full gap-1">
+      {/* <Button variant="outline" className="w-full gap-1">
         Continuar com Google <GoogleIcon />
-      </Button>
+      </Button> */}
     </div>
     <div className="mt-4 text-center text-sm">
-      Não tem uma conta?{" "}
       <Link href="#" className="underline">
-        cadastre-se
+        Não tem uma conta?
       </Link>
     </div>
   </div>
