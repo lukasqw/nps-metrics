@@ -1,9 +1,10 @@
 "use client";
 
 import {
-  Area,
-  AreaChart,
   CartesianGrid,
+  LabelList,
+  Line,
+  LineChart,
   ResponsiveContainer,
   XAxis,
 } from "recharts";
@@ -16,34 +17,60 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-export const description = "A simple area chart";
+export const description = "A multiple line chart";
 
-const chartData = [
-  { month: "January", desktop: 186 },
-  { month: "February", desktop: 150 },
-  { month: "March", desktop: 200 },
-  { month: "April", desktop: 73 },
-  { month: "May", desktop: 200 },
-  { month: "June", desktop: 200 },
-];
+// Gerador de valores aleatórios com variação de 20% do valor anterior
+const months = ["January", "February", "March", "April", "May", "June"];
+const generateRandomValuesWithVariation = (
+  numPoints: number,
+  min: number,
+  max: number
+) => {
+  const values = [Math.floor(Math.random() * (max - min + 1)) + min]; // Primeiro valor aleatório
+
+  for (let i = 1; i < numPoints; i++) {
+    const previousValue = values[i - 1];
+    const variation = previousValue * 0.5;
+    const newValue = Math.floor(
+      Math.random() * (2 * variation + 1) + (previousValue - variation)
+    );
+    values.push(Math.max(min, Math.min(max, newValue))); // Garantir que o valor esteja dentro do intervalo
+  }
+
+  return values;
+};
+const desktopValues = generateRandomValuesWithVariation(months.length, 0, 100);
+const mobileValues = generateRandomValuesWithVariation(months.length, 0, 100);
+const chartData = months.map((month, index) => ({
+  month,
+  desktop: desktopValues[index],
+  mobile: mobileValues[index],
+}));
+// ------
 
 const chartConfig = {
   desktop: {
     label: "Desktop",
     color: "hsl(var(--chart-1))",
   },
+  mobile: {
+    label: "Mobile",
+    color: "hsl(var(--chart-2))",
+  },
 } satisfies ChartConfig;
 
 export function NpsLine() {
   return (
     <Card>
-      <div className="p-4 pb-2">
-        <h2 className="text-lg font-bold">Evolução do NPS</h2>
+      <div className="p-4 pb-4">
+        <h2 className="text-lg font-bold">
+          Evolução do NPS x Sentimento Geral
+        </h2>
       </div>
       <CardContent>
-        <ResponsiveContainer width="100%" height="250px">
+        <ResponsiveContainer width="100%" height={300}>
           <ChartContainer config={chartConfig}>
-            <AreaChart
+            <LineChart
               accessibilityLayer
               data={chartData}
               margin={{
@@ -59,32 +86,48 @@ export function NpsLine() {
                 tickMargin={8}
                 tickFormatter={(value) => value.slice(0, 3)}
               />
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent indicator="line" />}
-              />
-              <defs>
-                <linearGradient id={`fill-evo-nps`} x1="0" y1="0" x2="0" y2="1">
-                  <stop
-                    offset="5%"
-                    stopColor="var(--color-desktop)"
-                    stopOpacity={0.8}
-                  />
-                  <stop
-                    offset="95%"
-                    stopColor="var(--color-desktop)"
-                    stopOpacity={0.1}
-                  />
-                </linearGradient>
-              </defs>
-              <Area
+              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+              <Line
                 dataKey="desktop"
-                type="natural"
-                fill="url(#fill-evo-nps)"
-                fillOpacity={0.4}
+                type="monotone"
                 stroke="var(--color-desktop)"
-              />
-            </AreaChart>
+                strokeWidth={2}
+                dot={{
+                  fill: "var(--color-desktop)",
+                }}
+                activeDot={{
+                  r: 6,
+                }}
+              >
+                <LabelList
+                  dataKey="desktop"
+                  position="bottom"
+                  offset={12}
+                  className="fill-foreground"
+                  fontSize={12}
+                />
+              </Line>
+              <Line
+                dataKey="mobile"
+                type="monotone"
+                stroke="var(--color-mobile)"
+                strokeWidth={2}
+                dot={{
+                  fill: "var(--color-mobile)",
+                }}
+                activeDot={{
+                  r: 6,
+                }}
+              >
+                <LabelList
+                  dataKey="mobile"
+                  position="bottom"
+                  offset={12}
+                  className="fill-foreground"
+                  fontSize={12}
+                />
+              </Line>
+            </LineChart>
           </ChartContainer>
         </ResponsiveContainer>
       </CardContent>
