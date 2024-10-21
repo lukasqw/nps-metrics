@@ -1,6 +1,6 @@
 "use client";
 
-import { IndicatorData } from "@/app/interfaces/indicator-data";
+import { IndicatorData } from "@/interfaces/indicator-data";
 import { IndicatorBox } from "@/components/shared/indicator-box";
 import { useSelectedFilterDash } from "@/hooks/use-filter-dash";
 import { useEffect, useState } from "react";
@@ -15,16 +15,17 @@ const initialChartData = [
 ];
 
 const initialIndicatorData: IndicatorData = {
-  title: "Sentimento Geral",
+  title: "Taxa de repostas",
   subtitle: "",
-  value: 50,
-  variation: 10,
-  typeVariation: "absolute",
+  value: 85,
+  typeValue: "percent",
+  variation: 2,
+  typeVariation: "percent",
   chartData: initialChartData,
-  chartColor: "--chart-2",
+  chartColor: "--chart-3",
 };
 
-export function SentimentIndicator() {
+export function ResponseRateIndicator() {
   const { selectedPeriod } = useSelectedFilterDash();
   const [indicatorData, setIndicatorData] =
     useState<IndicatorData>(initialIndicatorData);

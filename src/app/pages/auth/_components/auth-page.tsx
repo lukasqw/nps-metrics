@@ -7,6 +7,7 @@ import loginImage from "@/assets/login-background.jpg";
 import { ModeToggle } from "@/components/theme/mode-toggle";
 import { Facebook, Instagram, Linkedin } from "lucide-react";
 import Logo from "@/components/shared/logo";
+import { AuthForm } from "./auth-form";
 
 const SocialLinks = () => (
   <div className="flex gap-4 justify-end">
@@ -60,51 +61,7 @@ const GoogleIcon = () => (
   </svg>
 );
 
-const LoginForm = () => (
-  <div className="mx-auto grid lg:w-[400px] gap-6 py-10">
-    <div className="grid gap-2 ">
-      <h1 className="text-3xl font-bold">Bem vindo de volta</h1>
-      <p className="text-muted-foreground">
-        Insira seu e-mail abaixo para fazer login em sua conta
-      </p>
-    </div>
-    <div className="grid gap-4">
-      <div className="grid gap-2">
-        <Label htmlFor="email">Email</Label>
-        <Input id="email" type="email" placeholder="m@example.com" required />
-      </div>
-      <div className="grid gap-2">
-        <Label htmlFor="password">Senha</Label>
-        <Input id="password" type="password" required />
-        <div className="flex items-center">
-          <input type="checkbox" id="remember" />
-          <Label htmlFor="remember" className="ml-2">
-            Lembrar de mim
-          </Label>
-          <Link
-            href="/forgot-password"
-            className="ml-auto inline-block text-sm underline"
-          >
-            esqueceu a senha?
-          </Link>
-        </div>
-      </div>
-      <Button type="submit" className="w-full">
-        Login
-      </Button>
-      {/* <Button variant="outline" className="w-full gap-1">
-        Continuar com Google <GoogleIcon />
-      </Button> */}
-    </div>
-    <div className="mt-4 text-center text-sm">
-      <Link href="#" className="underline">
-        Não tem uma conta?
-      </Link>
-    </div>
-  </div>
-);
-
-export function AuthForm() {
+export function AuthPage() {
   return (
     <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
       <div className="absolute top-4 right-4 z-10 shadow-lg">
@@ -126,7 +83,7 @@ export function AuthForm() {
         <div className="lg:invisible">
           <Logo size={38} titleSize="3xl" subtitleSize="2xl" />
         </div>
-        <LoginForm />
+        <AuthForm />
         <SocialLinks />
       </div>
     </div>

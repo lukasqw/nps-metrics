@@ -1,6 +1,6 @@
 "use client";
 
-import { IndicatorData } from "@/app/interfaces/indicator-data";
+import { IndicatorData } from "@/interfaces/indicator-data";
 import { IndicatorBox } from "@/components/shared/indicator-box";
 import { useSelectedFilterDash } from "@/hooks/use-filter-dash";
 import { useEffect, useState } from "react";

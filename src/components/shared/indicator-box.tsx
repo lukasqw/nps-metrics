@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { IndicatorData } from "@/app/interfaces/indicator-data";
+import { IndicatorData } from "@/interfaces/indicator-data";
 import { ReactNode } from "react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";

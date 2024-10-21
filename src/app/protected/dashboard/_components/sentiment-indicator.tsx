@@ -1,30 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { IndicatorData } from "@/app/interfaces/indicator-data";
+import { IndicatorData } from "@/interfaces/indicator-data";
 import { IndicatorBox } from "@/components/shared/indicator-box";
 import { useSelectedFilterDash } from "@/hooks/use-filter-dash";
+import { useEffect, useState } from "react";
 
 const initialChartData = [
-  { day: 1, value: 80 },
-  { day: 2, value: 90 },
+  { day: 1, value: 100 },
+  { day: 2, value: 60 },
   { day: 3, value: 70 },
-  { day: 4, value: 110 },
-  { day: 5, value: 105 },
-  { day: 6, value: 120 },
+  { day: 4, value: 50 },
+  { day: 5, value: 90 },
+  { day: 6, value: 100 },
 ];
 
 const initialIndicatorData: IndicatorData = {
-  title: "Média do NPS",
+  title: "Sentimento Geral",
   subtitle: "",
-  value: 70,
-  variation: -10,
-  typeVariation: "percent",
+  value: 50,
+  variation: 10,
+  typeVariation: "absolute",
   chartData: initialChartData,
-  chartColor: "--chart-1",
+  chartColor: "--chart-2",
 };
 
-export function NpsIndicator() {
+export function SentimentIndicator() {
   const { selectedPeriod } = useSelectedFilterDash();
   const [indicatorData, setIndicatorData] =
     useState<IndicatorData>(initialIndicatorData);

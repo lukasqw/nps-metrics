@@ -1,4 +1,4 @@
-import { useSelectedPeriod } from "@/app/dashboard/context/selectedFilterDash";
+import { useSelectedPeriod } from "@/app/protected/dashboard/context/selectedFilterDash";
 
 export function useSelectedFilterDash() {
   const { selectedPeriod, setSelectedPeriod } = useSelectedPeriod();

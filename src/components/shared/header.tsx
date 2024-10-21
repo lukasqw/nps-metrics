@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { ChartPie, CircleUser, Menu, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,9 +15,19 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import useMenuLinks from "@/hooks/use-menu-links";
 import { ModeToggle } from "../theme/mode-toggle";
+import { deleteCookie } from "cookies-next";
+import { useRouter } from "next/navigation";
 
-const Header = () => {
+export default function Header() {
+  const router = useRouter();
   const menuLinks = useMenuLinks();
+
+  function handleLogout() {
+    // Handle logout logic here
+    deleteCookie("auth-token");
+    router.push("/pages/auth");
+    console.log("Logged out");
+  }
 
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-white dark:bg-zinc-950 px-4 lg:h-[60px] lg:px-6">
@@ -75,12 +87,10 @@ const Header = () => {
           <DropdownMenuItem>Settings</DropdownMenuItem>
           <DropdownMenuItem>Support</DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Logout</DropdownMenuItem>
+          <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
       <ModeToggle />
     </header>
   );
-};
-
-export default Header;
+}
