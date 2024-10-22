@@ -48,7 +48,7 @@ export function SentimentPie() {
       </div>
 
       <CardContent className="flex-1 pb-0">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height={300}>
           <ChartContainer
             config={chartConfig}
             className="mx-auto aspect-square w-full max-h-[250px] pb-0 [&_.recharts-pie-label-text]:fill-foreground"
