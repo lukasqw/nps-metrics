@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: false, // Esta configuração ativa o React.StrictMode
   async redirects() {
     return [
       {

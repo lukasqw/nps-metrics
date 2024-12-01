@@ -1,9 +1,12 @@
 import { Card } from "@/components/ui/card";
-import { IndicatorData } from "@/interfaces/indicator-data";
+
 import { ReactNode } from "react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { Skeleton } from "../ui/skeleton";
+import { IndicatorData } from "@/interfaces/indicator-data.interface";
+import { Button } from "../ui/button";
+import { Sparkles } from "lucide-react";
 
 interface IndicatorBoxProps {
   data: IndicatorData;
@@ -41,14 +44,22 @@ export function IndicatorBox({ data }: IndicatorBoxProps) {
   const valueUnit = data.typeValue === "percent" ? "%" : "";
   const variationSign = isPositiveVariation ? "+" : "";
   const variationUnit = data.typeVariation === "percent" ? "%" : "";
+  const showChart = (data.chartData?.length ?? 0) > 0;
+  const showVariation = data.variation !== 0;
 
   return (
     <div>
-      {data.chartData ? (
+      {showChart ? (
         <Card className="p-0 flex flex-col justify-between">
           <div className="p-4 pb-1 gap-2">
             <div>
-              <h2 className="text-lg font-bold">{data.title}</h2>
+              <div className="flex justify-between">
+                <h2 className="text-lg font-bold">{data.title}</h2>
+                <Button variant="outline" size="icon" className="border-none">
+                  <Sparkles className="h-3.5 w-3.5" />
+                </Button>
+              </div>
+
               {data.subtitle && (
                 <span className="text-sm text-gray-500">{data.subtitle}</span>
               )}
@@ -60,13 +71,15 @@ export function IndicatorBox({ data }: IndicatorBoxProps) {
                   {valueUnit}
                 </span>
               </div>
-              <div
-                className={`text-sm font-bold ${variationColor} bg-opacity-20 rounded-md px-1.5 py-0.5`}
-              >
-                {variationSign}
-                {data.variation}
-                {variationUnit}
-              </div>
+              {showVariation && (
+                <div
+                  className={`text-sm font-bold ${variationColor} bg-opacity-20 rounded-md px-1.5 py-0.5`}
+                >
+                  {variationSign}
+                  {data.variation}
+                  {variationUnit}
+                </div>
+              )}
             </div>
           </div>
           <div className="h-[60px]">

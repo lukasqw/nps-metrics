@@ -1,17 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { ChartPie, CircleUser, Menu, Search } from "lucide-react";
+import { ChartPie, CircleUser, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import useMenuLinks from "@/hooks/use-menu-links";
 import { ModeToggle } from "../theme/mode-toggle";
@@ -63,7 +61,7 @@ export default function Header() {
         </SheetContent>
       </Sheet>
       <div className="w-full flex-1">
-        <form>
+        {/* <form>
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -72,7 +70,7 @@ export default function Header() {
               className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
             />
           </div>
-        </form>
+        </form> */}
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -82,11 +80,11 @@ export default function Header() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>Settings</DropdownMenuItem>
-          <DropdownMenuItem>Support</DropdownMenuItem>
-          <DropdownMenuSeparator />
+          <DropdownMenuLabel>Meu Perfil</DropdownMenuLabel>
+          {/* <DropdownMenuSeparator /> */}
+          {/* <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuItem>Support</DropdownMenuItem> */}
+          {/* <DropdownMenuSeparator />  */}
           <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

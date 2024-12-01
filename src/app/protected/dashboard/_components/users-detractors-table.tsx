@@ -1,4 +1,6 @@
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -7,16 +9,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
 import { ILastReviews } from "@/services/http/interfaces/responses/last-reviews.interface";
-import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
 
 interface UsersPromotersProps {
   data: ILastReviews[];
 }
 
-export function UsersPromotersTable({ data }: UsersPromotersProps) {
+export function UsersDetractorsTable({ data }: UsersPromotersProps) {
   return (
     <div>
       {data.length === 0 ? (
@@ -24,7 +24,7 @@ export function UsersPromotersTable({ data }: UsersPromotersProps) {
       ) : (
         <Card className="h-full">
           <div className="p-4 pb-2 flex justify-between">
-            <h2 className="text-lg font-bold">Últimos Promotores</h2>
+            <h2 className="text-lg font-bold">Últimos Detratores</h2>
             <Button variant="outline" size="icon" className="border-none">
               <Sparkles className="h-3.5 w-3.5" />
             </Button>

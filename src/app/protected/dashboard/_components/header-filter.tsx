@@ -25,7 +25,7 @@ export function HeaderFilter() {
             variant="outline"
             size="sm"
             value={item.value}
-            className="h-7 gap-1 bg-white dark:bg-transparent"
+            className="h-7 gap-1 "
           >
             {item.label}
           </ToggleGroupItem>

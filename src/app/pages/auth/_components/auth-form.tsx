@@ -1,28 +1,23 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, Control } from "react-hook-form";
-import { z } from "zod";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
 import { toast } from "@/hooks/use-toast";
 import Link from "next/link";
-import { Checkbox } from "@/components/ui/checkbox";
 import { setCookie } from "cookies-next";
 import { useRouter } from "next/navigation";
+import { HttpAuthService } from "@/services/http/http-auth.service";
+import { z } from "zod";
+import { PasswordField, RememberMeField, UserNameField } from "./formFields";
+import { useState } from "react";
+import { LoaderCircle } from "lucide-react";
 
 // Form schema definition
 const formSchema = z.object({
-  email: z.string().email({
-    message: "Por favor insira um e-mail válido.",
+  userName: z.string().min(1, {
+    message: "Por favor insira um usuário válido.",
   }),
   password: z.string().min(1, {
     message: "Por favor insira sua senha.",
@@ -32,125 +27,39 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>;
 
-// Form field components
-const EmailField = ({ control }: { control: Control<FormSchema> }) => (
-  <FormField
-    control={control}
-    name="email"
-    render={({ field }) => (
-      <FormItem>
-        <FormLabel>Email</FormLabel>
-        <FormControl>
-          <Input placeholder="email@example.com" {...field} />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    )}
-  />
-);
-
-const PasswordField = ({ control }: { control: Control<FormSchema> }) => (
-  <FormField
-    control={control}
-    name="password"
-    render={({ field }) => (
-      <FormItem>
-        <FormLabel>Senha</FormLabel>
-        <FormControl>
-          <Input type="password" placeholder="********" {...field} />
-        </FormControl>
-        <FormMessage />
-      </FormItem>
-    )}
-  />
-);
-
-const RememberMeField = ({ control }: { control: Control<FormSchema> }) => (
-  <FormField
-    control={control}
-    name="rememberMe"
-    render={({ field }) => (
-      <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md shadow">
-        <FormControl>
-          <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-        </FormControl>
-        <div className="space-y-1 leading-none">
-          <FormLabel>Lembrar de mim</FormLabel>
-        </div>
-      </FormItem>
-    )}
-  />
-);
-
-// API call function
-async function authenticateUser(data: FormSchema) {
-  try {
-    const response = await fetch("/api/authenticate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to authenticate");
-    }
-
-    const result = await response.json();
-    return result;
-  } catch (error) {
-    throw new Error(error.message);
-  }
-}
-
 export function AuthForm() {
-  const router = useRouter(); // Inicialize o useRouter
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      userName: "",
       password: "",
       rememberMe: false,
     },
   });
 
   async function onSubmit(data: FormSchema) {
+    setIsLoading(true);
     try {
-      // Supondo que authenticateUser retorne um token
-      // const result = await authenticateUser(data);
-      const result = {
-        token: 123,
-      };
-      // Defina o cookie auth-token
-      setCookie("auth-token", result.token, { maxAge: 60 * 60 * 24 }); // 1 dia de validade
-
-      toast({
-        title: "Success",
-        description: (
-          <pre className="mt-2 w-fit rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-            <code>{result.token}</code>
-          </pre>
-        ),
+      const result = await HttpAuthService.login({
+        username: data.userName,
+        password: data.password,
       });
 
-      // Navegue para a tela do dashboard
+      setCookie("auth-token", result.accessToken, { maxAge: 60 * 60 * 24 }); // 1 dia de validade
+      toast({
+        title: "Login efetuado com sucesso",
+      });
       router.push("/protected/dashboard");
-    } catch (error) {
+    } catch {
       toast({
-        title: "Error",
-        description: (
-          <pre className="mt-2 w-fit rounded-md bg-slate-950 p-4">
-            <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-            <code>
-              {error instanceof Error
-                ? error.message
-                : "An unknown error occurred"}
-            </code>
-          </pre>
-        ),
+        title: "Tivemos um erro inesperado",
+        description: "Por favor tente novamente mais tarde.",
+        variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -164,7 +73,7 @@ export function AuthForm() {
       </div>
       <Form {...form}>
         <form className="grid gap-4" onSubmit={form.handleSubmit(onSubmit)}>
-          <EmailField control={form.control} />
+          <UserNameField control={form.control} />
           <PasswordField control={form.control} />
           <div className="flex items-center">
             <RememberMeField control={form.control} />
@@ -175,8 +84,8 @@ export function AuthForm() {
               esqueceu a senha?
             </Link>
           </div>
-          <Button type="submit" className="w-full">
-            Login
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? <LoaderCircle className="animate-spin" /> : "Entrar"}
           </Button>
         </form>
       </Form>

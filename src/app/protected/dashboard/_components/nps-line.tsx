@@ -16,121 +16,134 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-
-export const description = "A multiple line chart";
-
-// Gerador de valores aleatórios com variação de 20% do valor anterior
-const months = ["January", "February", "March", "April", "May", "June"];
-const generateRandomValuesWithVariation = (
-  numPoints: number,
-  min: number,
-  max: number
-) => {
-  const values = [Math.floor(Math.random() * (max - min + 1)) + min]; // Primeiro valor aleatório
-
-  for (let i = 1; i < numPoints; i++) {
-    const previousValue = values[i - 1];
-    const variation = previousValue * 0.5;
-    const newValue = Math.floor(
-      Math.random() * (2 * variation + 1) + (previousValue - variation)
-    );
-    values.push(Math.max(min, Math.min(max, newValue))); // Garantir que o valor esteja dentro do intervalo
-  }
-
-  return values;
-};
-const desktopValues = generateRandomValuesWithVariation(months.length, 0, 100);
-const mobileValues = generateRandomValuesWithVariation(months.length, 0, 100);
-const chartData = months.map((month, index) => ({
-  month,
-  desktop: desktopValues[index],
-  mobile: mobileValues[index],
-}));
-// ------
+import { IMonthValues } from "@/services/http/interfaces/responses/month-values.interfaces";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Sparkles } from "lucide-react";
 
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  nps: {
+    label: "NPS",
     color: "hsl(var(--chart-1))",
   },
-  mobile: {
-    label: "Mobile",
+  sentiment: {
+    label: "Sentimento",
     color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig;
 
-export function NpsLine() {
+interface NpsLineProps {
+  data: IMonthValues[];
+}
+
+const mapMonthNumberToName = (monthNumber: number): string => {
+  const monthNames = [
+    "Janeiro",
+    "Fevereiro",
+    "Março",
+    "Abril",
+    "Maio",
+    "Junho",
+    "Julho",
+    "Agosto",
+    "Setembro",
+    "Outubro",
+    "Novembro",
+    "Dezembro",
+  ];
+  return monthNames[monthNumber - 1];
+};
+
+export function NpsLine({ data }: NpsLineProps) {
+  const sortedData = data.sort((a, b) => a.month - b.month);
+  const mappedData = sortedData.map((item) => ({
+    ...item,
+    month: mapMonthNumberToName(item.month),
+  }));
+
   return (
-    <Card>
-      <div className="p-4 pb-4">
-        <h2 className="text-lg font-bold">
-          Evolução do NPS x Sentimento Geral
-        </h2>
-      </div>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <ChartContainer config={chartConfig}>
-            <LineChart
-              accessibilityLayer
-              data={chartData}
-              margin={{
-                left: 12,
-                right: 12,
-              }}
-            >
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="month"
-                tickLine={false}
-                axisLine={false}
-                tickMargin={8}
-                tickFormatter={(value) => value.slice(0, 3)}
-              />
-              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-              <Line
-                dataKey="desktop"
-                type="monotone"
-                stroke="var(--color-desktop)"
-                strokeWidth={2}
-                dot={{
-                  fill: "var(--color-desktop)",
-                }}
-                activeDot={{
-                  r: 6,
-                }}
-              >
-                <LabelList
-                  dataKey="desktop"
-                  position="bottom"
-                  offset={12}
-                  className="fill-foreground"
-                  fontSize={12}
-                />
-              </Line>
-              <Line
-                dataKey="mobile"
-                type="monotone"
-                stroke="var(--color-mobile)"
-                strokeWidth={2}
-                dot={{
-                  fill: "var(--color-mobile)",
-                }}
-                activeDot={{
-                  r: 6,
-                }}
-              >
-                <LabelList
-                  dataKey="mobile"
-                  position="bottom"
-                  offset={12}
-                  className="fill-foreground"
-                  fontSize={12}
-                />
-              </Line>
-            </LineChart>
-          </ChartContainer>
-        </ResponsiveContainer>
-      </CardContent>
-    </Card>
+    <div>
+      {mappedData.length === 0 ? (
+        <Skeleton className="h-[386px] w-full" />
+      ) : (
+        <Card>
+          <div className="p-4 pb-4 flex justify-between">
+            <h2 className="text-lg font-bold">
+              Evolução do NPS x Sentimento Geral
+            </h2>
+            <Button variant="outline" size="icon" className="border-none">
+              <Sparkles className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <ChartContainer config={chartConfig}>
+                <LineChart
+                  accessibilityLayer
+                  data={mappedData}
+                  margin={{
+                    left: 12,
+                    right: 12,
+                  }}
+                >
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="month"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={8}
+                    tickFormatter={(value) => value.slice(0, 3)}
+                  />
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent />}
+                  />
+                  <Line
+                    dataKey="nps"
+                    type="monotone"
+                    stroke="var(--color-nps)"
+                    strokeWidth={2}
+                    dot={{
+                      fill: "var(--color-nps)",
+                    }}
+                    activeDot={{
+                      r: 6,
+                    }}
+                  >
+                    <LabelList
+                      dataKey="nps"
+                      position="bottom"
+                      offset={12}
+                      className="fill-foreground"
+                      fontSize={12}
+                    />
+                  </Line>
+                  <Line
+                    dataKey="sentiment"
+                    type="monotone"
+                    stroke="var(--color-sentiment)"
+                    strokeWidth={2}
+                    dot={{
+                      fill: "var(--color-sentiment)",
+                    }}
+                    activeDot={{
+                      r: 6,
+                    }}
+                  >
+                    <LabelList
+                      dataKey="sentiment"
+                      position="bottom"
+                      offset={12}
+                      className="fill-foreground"
+                      fontSize={12}
+                    />
+                  </Line>
+                </LineChart>
+              </ChartContainer>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }

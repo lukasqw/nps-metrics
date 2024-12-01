@@ -1,5 +1,11 @@
+"use client";
 import { Dashboard } from "./_components/dashboard";
+import { SelectedFilterDashProvider } from "./context/selectedFilterDash";
 
 export default function Page() {
-  return <Dashboard />;
+  return (
+    <SelectedFilterDashProvider>
+      <Dashboard />
+    </SelectedFilterDashProvider>
+  );
 }

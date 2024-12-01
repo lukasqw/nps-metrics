@@ -17,7 +17,7 @@ const distributionRatios = {
   passives: 0.3,
   promoters: 0.3,
 };
-const generateRandomValues = (total, ratio) => {
+const generateRandomValues = (total: number, ratio: number) => {
   const values = [];
   let remaining = total;
 
