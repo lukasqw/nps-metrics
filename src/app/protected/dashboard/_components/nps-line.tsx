@@ -96,7 +96,7 @@ export function NpsLine() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const companyId = "582c2182-5c69-4a9b-8b84-e4a71972255c";
+        const companyId = sessionStorage.getItem("companyId") || "";
         const endDate = endOfYear(new Date());
         const startDate = startOfYear(new Date());
 

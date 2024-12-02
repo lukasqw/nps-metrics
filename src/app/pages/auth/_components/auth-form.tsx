@@ -47,7 +47,10 @@ export function AuthForm() {
         password: data.password,
       });
 
-      setCookie("auth-token", result.accessToken, { maxAge: 60 * 60 * 24 }); // 1 dia de validade
+      setCookie("auth-token", result.accessToken, { maxAge: 60 * 60 * 24 });
+      sessionStorage.setItem("companyId", result.companyId);
+      sessionStorage.setItem("userId", result.userId);
+
       toast({
         title: "Login efetuado com sucesso",
       });

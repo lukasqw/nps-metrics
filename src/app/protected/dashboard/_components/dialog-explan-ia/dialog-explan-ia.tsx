@@ -13,6 +13,7 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { ScrollBar } from "@/components/ui/scroll-area";
+import MarkdownPreview from "@uiw/react-markdown-preview";
 
 const fetchAnalysis = async (prompt: string) => {
   const resp = await fetch(process.env.NEXT_PUBLIC_AI_URL as string, {
@@ -90,9 +91,7 @@ export function DialogExplanIA() {
     <Dialog open={isDialogOpen} onOpenChange={closeDialog}>
       <DialogContent className="sm:max-w-[800px] max-h-[800px]">
         <DialogHeader>
-          <DialogTitle className="mb-2">
-            {dialogParams.title ? dialogParams.title : "Informações"}
-          </DialogTitle>
+          <DialogTitle className="mb-4">Analise do gráfico</DialogTitle>
           <DialogDescription>
             {loading ? (
               <div className="h-[300px] flex justify-center items-center">
@@ -102,9 +101,16 @@ export function DialogExplanIA() {
               <ScrollArea className="max-h-[500px] overflow-y-auto">
                 {analysisResult && (
                   <>
-                    <Markdown remarkPlugins={[remarkGfm]}>
+                    {/* <Markdown
+                      remarkPlugins={[remarkGfm]}
+                      className="leading-7 text-gray-200"
+                    >
                       {analysisResult}
-                    </Markdown>
+                    </Markdown> */}
+                    <MarkdownPreview
+                      source={analysisResult}
+                      style={{ backgroundColor: "transparent" }}
+                    />
                     <ScrollBar orientation="vertical" />
                   </>
                 )}

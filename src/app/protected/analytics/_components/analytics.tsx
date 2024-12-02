@@ -27,8 +27,8 @@ const FormSchema = z.object({
     .min(1, {
       message: "O comentário deve ter pelo menos 1 caracteres.",
     })
-    .max(300, {
-      message: "A comentário não deve ter mais de 300 caracteres.",
+    .max(500, {
+      message: "A comentário não deve ter mais de 500 caracteres.",
     })
     .nonempty({
       message: "A comentário é obrigatória.",
