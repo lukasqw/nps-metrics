@@ -16,6 +16,12 @@ interface UsersPromotersProps {
   data: ILastReviews[];
 }
 
+const sentimentMap: { [key: string]: string } = {
+  positive: "Positivo",
+  neutral: "Neutro",
+  negative: "Negativo",
+};
+
 export function UsersDetractorsTable({ data }: UsersPromotersProps) {
   return (
     <div>
@@ -43,7 +49,7 @@ export function UsersDetractorsTable({ data }: UsersPromotersProps) {
                   <TableRow key={index}>
                     <TableCell className="text-center">{row.rating}</TableCell>
                     <TableCell className="text-center">
-                      {row.sentiment}
+                      {sentimentMap[row.sentiment] || row.sentiment}
                     </TableCell>
                     <TableCell>{row.comment}</TableCell>
                   </TableRow>

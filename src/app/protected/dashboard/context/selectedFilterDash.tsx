@@ -14,7 +14,7 @@ export const SelectedFilterDashProvider = ({
 }: {
   children: ReactNode;
 }) => {
-  const [selectedPeriod, setSelectedPeriod] = useState<string>("30");
+  const [selectedPeriod, setSelectedPeriod] = useState<string>("120");
 
   return (
     <SelectedPeriodContext.Provider
