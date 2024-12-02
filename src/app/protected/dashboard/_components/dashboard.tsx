@@ -13,8 +13,10 @@ import { HttpDashboardService } from "@/services/http/http-dashboard.service";
 import { PieDistribution } from "./pie-distribution";
 import { IDashboardResponse } from "@/services/http/interfaces/responses/dashboard-response.interface";
 import { useSelectedFilterDash } from "@/hooks/use-filter-dash";
-import { subDays, format, set } from "date-fns";
+import { subDays, format } from "date-fns";
 import { UsersDetractorsTable } from "./users-detractors-table";
+import { DialogProvider } from "../context/dialogContext";
+import { DialogExplanIA } from "./dialog-explan-ia/dialog-explan-ia";
 
 const DefaultDashboardData: IDashboardResponse = {
   nps_score: 0,
@@ -49,7 +51,7 @@ export function Dashboard() {
     async function fetchData() {
       try {
         const companyId = "582c2182-5c69-4a9b-8b84-e4a71972255c";
-        const endDate = new Date("2024-07-30");
+        const endDate = new Date("2024-06-30");
         const startDate = subDays(endDate, parseInt(selectedPeriod));
 
         const formattedStartDate = format(startDate, "yyyy-MM-dd");
@@ -72,53 +74,60 @@ export function Dashboard() {
   }, [selectedPeriod]);
 
   return (
-    <PageLayout>
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold md:text-2xl">Dashboard</h1>
-        <HeaderFilter />
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <NpsIndicator
-          value={dashboardData.nps_score}
-          variation={0}
-          chartData={dashboardData.nps_distribution_by_period}
-        />
-        <SentimentIndicator
-          value={dashboardData.sentiment_score}
-          variation={0}
-          chartData={dashboardData.sentiment_distribution_by_period}
-        />
-        <ResponseRateIndicator
-          value={dashboardData.response_rate}
-          variation={0}
-          chartData={dashboardData.response_rate_by_period}
-        />
-        <TotalResponseIndicator
-          value={dashboardData.total_reviews}
-          variation={0}
-          chartData={dashboardData.total_reviews_by_period}
-        />
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 ">
-        <PieDistribution
-          type="nps"
-          title="Distribuição do NPS"
-          chartData={dashboardData?.nps_distribution}
-        />
-        <PieDistribution
-          type="sentiment"
-          title="Distribuição do sentimento"
-          chartData={dashboardData?.sentiment_distribution}
-        />
-        {/* <NpsBars /> */}
-      </div>
-      <div className="grid grid-cols-1 ">
-        <NpsLine data={dashboardData.last_year} />
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 ">
-        <UsersPromotersTable data={dashboardData.last_five_positive_reviews} />
-        <UsersDetractorsTable data={dashboardData.last_five_negative_reviews} />
-      </div>
-    </PageLayout>
+    <DialogProvider>
+      <PageLayout>
+        <div className="flex items-center justify-between">
+          <h1 className="text-lg font-semibold md:text-2xl">Dashboard</h1>
+          <HeaderFilter />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <NpsIndicator
+            value={dashboardData.nps_score}
+            variation={0}
+            chartData={dashboardData.nps_distribution_by_period}
+          />
+          <SentimentIndicator
+            value={dashboardData.sentiment_score}
+            variation={0}
+            chartData={dashboardData.sentiment_distribution_by_period}
+          />
+          <ResponseRateIndicator
+            value={dashboardData.response_rate}
+            variation={0}
+            chartData={dashboardData.response_rate_by_period}
+          />
+          <TotalResponseIndicator
+            value={dashboardData.total_reviews}
+            variation={0}
+            chartData={dashboardData.total_reviews_by_period}
+          />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 ">
+          <PieDistribution
+            type="nps"
+            title="Distribuição do NPS"
+            chartData={dashboardData?.nps_distribution}
+          />
+          <PieDistribution
+            type="sentiment"
+            title="Distribuição do sentimento"
+            chartData={dashboardData?.sentiment_distribution}
+          />
+          {/* <NpsBars /> */}
+        </div>
+        <div className="grid grid-cols-1 ">
+          <NpsLine />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 ">
+          <UsersPromotersTable
+            data={dashboardData.last_five_positive_reviews}
+          />
+          <UsersDetractorsTable
+            data={dashboardData.last_five_negative_reviews}
+          />
+        </div>
+      </PageLayout>
+      <DialogExplanIA></DialogExplanIA>
+    </DialogProvider>
   );
 }

@@ -11,12 +11,12 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { HttpDashboardService } from "@/services/http/http-dashboard.service";
 import { IChartPie, IPieData } from "@/interfaces/pie-data.interface";
 import { Skeleton } from "@/components/ui/skeleton";
 import { IDistributionData } from "@/services/http/interfaces/responses/distribution-data.interface";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
+import { useDialog } from "../context/dialogContext";
 
 export function usePieData(
   initialChartData?: IDistributionData,
@@ -72,12 +72,54 @@ interface PieDistributionProps {
   type: "nps" | "sentiment";
 }
 
+function generatePrompt(
+  chartData: IDistributionData,
+  total: number,
+  type: string
+): string {
+  const positivePercentage = ((chartData.positive / total) * 100).toFixed(2);
+  const neutralPercentage = ((chartData.neutral / total) * 100).toFixed(2);
+  const negativePercentage = ((chartData.negative / total) * 100).toFixed(2);
+  const analyzeType =
+    type === "nps"
+      ? "NPS"
+      : "NPS calculado a partir do Sentimento Geral dos comentários dos clientes";
+
+  return `
+Análise do Gráfico de ${analyzeType}
+Promotores: ${chartData.positive} (${positivePercentage}%)
+Neutros: ${chartData.neutral} (${neutralPercentage}%)
+Detratores: ${chartData.negative} (${negativePercentage}%)
+Total: ${total}
+
+Com base nos dados fornecidos, forneça uma análise detalhada sobre a distribuição dos promotores, neutros e detratores, incluindo:
+1. Tendências gerais observadas na distribuição.
+2. Possíveis causas para a distribuição atual.
+3. Identificação de quaisquer padrões sazonais ou eventos específicos que possam ter influenciado os resultados.
+4. Sugestões de ações para melhorar a distribuição nos próximos períodos.
+5. Comparação com benchmarks da indústria, se disponível.
+6. Qualquer outra observação relevante que possa ser extraída dos dados fornecidos.
+  `;
+}
+
 export function PieDistribution({
   chartData: initialChartData,
   title = "Distribuição",
   type = "nps",
 }: PieDistributionProps) {
   const { chartData, total } = usePieData(initialChartData, type);
+  const { setDialogOpen, setDialogParams } = useDialog();
+
+  function openDialog() {
+    if (initialChartData) {
+      const prompt = generatePrompt(initialChartData, total, type);
+      setDialogParams({
+        title: title,
+        prompt,
+      });
+      setDialogOpen(true);
+    }
+  }
 
   if (chartData.length === 0) {
     return <Skeleton className="h-[362px] w-full" />;
@@ -91,6 +133,7 @@ export function PieDistribution({
           variant="outline"
           size="icon"
           className="absolute right-4 top-1/2 transform -translate-y-1/2 border-none"
+          onClick={() => openDialog()}
         >
           <Sparkles className="h-3.5 w-3.5" />
         </Button>

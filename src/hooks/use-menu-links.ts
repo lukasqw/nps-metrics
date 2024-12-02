@@ -4,7 +4,7 @@ const useMenuLinks = () => {
   const menuLinks = [
     { href: "/protected/dashboard", icon: Home, label: "Dashboard" },
     { href: "/protected/comments", icon: Table, label: "Comentários" },
-    { href: "#", icon: LineChart, label: "Analytics" },
+    { href: "/protected/analytics", icon: LineChart, label: "Analytics" },
   ];
 
   return menuLinks;

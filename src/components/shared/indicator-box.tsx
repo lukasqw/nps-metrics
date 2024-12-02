@@ -1,5 +1,4 @@
 import { Card } from "@/components/ui/card";
-
 import { ReactNode } from "react";
 import { Area, AreaChart, ResponsiveContainer } from "recharts";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
@@ -7,6 +6,7 @@ import { Skeleton } from "../ui/skeleton";
 import { IndicatorData } from "@/interfaces/indicator-data.interface";
 import { Button } from "../ui/button";
 import { Sparkles } from "lucide-react";
+import { useDialog } from "@/app/protected/dashboard/context/dialogContext";
 
 interface IndicatorBoxProps {
   data: IndicatorData;
@@ -33,6 +33,45 @@ function getChartConfig(chartColor: string): ChartConfig {
   } satisfies ChartConfig;
 }
 
+const analysisTypeMap = new Map<RegExp, string>([
+  [/nps/i, "NPS"],
+  [
+    /sentimento geral/i,
+    "NPS calculado a partir do Sentimento Geral dos comentários dos clientes",
+  ],
+  [/taxa de resposta/i, "taxa de resposta"],
+  [/total de respostas/i, "total de respostas"],
+]);
+
+const getAnalysisType = (title: string): string => {
+  const entries = Array.from(analysisTypeMap.entries());
+  for (const [pattern, type] of entries) {
+    if (pattern.test(title)) {
+      return type;
+    }
+  }
+  return "informações fornecidas";
+};
+
+const generatePrompt = (data: IndicatorData): string => {
+  const analysisType = getAnalysisType(data.title);
+  return `
+Análise do Gráfico - ${data.title}
+Valor do ${analysisType} no período: ${data.value}
+Dados do gráfico de linha: [${data.chartData
+    ?.map((d) => `Período: ${d.period}, Valor: ${d.value}`)
+    .join("; ")}]
+
+Com base nos dados fornecidos, forneça uma análise detalhada sobre a disposição do ${analysisType}, incluindo:
+1. Tendências gerais observadas no ${analysisType} ao longo do período.
+2. Possíveis causas para a variação do ${analysisType} em relação ao período anterior.
+3. Identificação de quaisquer padrões sazonais ou eventos específicos que possam ter influenciado os resultados.
+4. Sugestões de ações para melhorar o ${analysisType} nos próximos períodos.
+5. Comparação com benchmarks da indústria, se disponível.
+6. Qualquer outra observação relevante que possa ser extraída dos dados fornecidos.
+  `;
+};
+
 export function IndicatorBox({ data }: IndicatorBoxProps) {
   const uniqueId = generateId(data.title);
   const chartConfig = getChartConfig(data.chartColor);
@@ -46,6 +85,17 @@ export function IndicatorBox({ data }: IndicatorBoxProps) {
   const variationUnit = data.typeVariation === "percent" ? "%" : "";
   const showChart = (data.chartData?.length ?? 0) > 0;
   const showVariation = data.variation !== 0;
+  const { setDialogOpen, setDialogParams } = useDialog();
+
+  function openDialog() {
+    const prompt = generatePrompt(data);
+
+    setDialogParams({
+      title: data.title,
+      prompt,
+    });
+    setDialogOpen(true);
+  }
 
   return (
     <div>
@@ -55,7 +105,12 @@ export function IndicatorBox({ data }: IndicatorBoxProps) {
             <div>
               <div className="flex justify-between">
                 <h2 className="text-lg font-bold">{data.title}</h2>
-                <Button variant="outline" size="icon" className="border-none">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="border-none"
+                  onClick={() => openDialog()}
+                >
                   <Sparkles className="h-3.5 w-3.5" />
                 </Button>
               </div>

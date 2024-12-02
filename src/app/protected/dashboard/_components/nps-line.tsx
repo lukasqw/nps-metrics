@@ -20,6 +20,10 @@ import { IMonthValues } from "@/services/http/interfaces/responses/month-values.
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
+import { format, startOfYear, endOfYear } from "date-fns";
+import { HttpDashboardService } from "@/services/http/http-dashboard.service";
+import { useDialog } from "../context/dialogContext";
 
 const chartConfig = {
   nps: {
@@ -31,10 +35,6 @@ const chartConfig = {
     color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig;
-
-interface NpsLineProps {
-  data: IMonthValues[];
-}
 
 const mapMonthNumberToName = (monthNumber: number): string => {
   const monthNames = [
@@ -54,7 +54,73 @@ const mapMonthNumberToName = (monthNumber: number): string => {
   return monthNames[monthNumber - 1];
 };
 
-export function NpsLine({ data }: NpsLineProps) {
+function generatePrompt(title: string, chartData: IMonthValues[]): string {
+  return `
+Análise do Gráfico - ${title}
+Valor do NPS e Sentimento Geral por mês no último ano:
+${chartData
+  .map(
+    (item) =>
+      `${mapMonthNumberToName(item.month)}: NPS ${item.nps} - Sentimento ${
+        item.sentiment
+      }`
+  )
+  .join("\n")}
+
+Com base nos dados fornecidos, forneça uma análise detalhada sobre a disposição do NPS e Sentimento Geral, incluindo:
+1. Tendências gerais observadas no NPS e Sentimento Geral ao longo do período.
+2. Possíveis causas para variações no NPS e Sentimento Geral em relação aos meses anteriores.
+3. Identificação de quaisquer padrões sazonais ou eventos específicos que possam ter influenciado os resultados.
+4. Sugestões de ações para melhorar o NPS e Sentimento Geral nos próximos períodos.
+5. Comparação com benchmarks da indústria, se disponível.
+6. Qualquer outra observação relevante que possa ser extraída dos dados fornecidos.
+  `;
+}
+
+export function NpsLine() {
+  const [data, setData] = useState<IMonthValues[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { setDialogOpen, setDialogParams } = useDialog();
+
+  function openDialog() {
+    if (data) {
+      const prompt = generatePrompt("Evolução do NPS x Sentimento Geral", data);
+      setDialogParams({
+        title: "Evolução do NPS x Sentimento Geral",
+        prompt,
+      });
+      setDialogOpen(true);
+    }
+  }
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const companyId = "582c2182-5c69-4a9b-8b84-e4a71972255c";
+        const endDate = endOfYear(new Date());
+        const startDate = startOfYear(new Date());
+
+        const formattedStartDate = format(startDate, "yyyy-MM-dd");
+        const formattedEndDate = format(endDate, "yyyy-MM-dd");
+
+        const response = await HttpDashboardService.all(
+          companyId,
+          formattedStartDate,
+          formattedEndDate
+        );
+        if (response) {
+          setData(response.last_year);
+        }
+      } catch (error) {
+        console.error("Failed to fetch NPS data", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
+  }, []);
+
   const sortedData = data.sort((a, b) => a.month - b.month);
   const mappedData = sortedData.map((item) => ({
     ...item,
@@ -63,7 +129,7 @@ export function NpsLine({ data }: NpsLineProps) {
 
   return (
     <div>
-      {mappedData.length === 0 ? (
+      {loading ? (
         <Skeleton className="h-[386px] w-full" />
       ) : (
         <Card>
@@ -71,7 +137,12 @@ export function NpsLine({ data }: NpsLineProps) {
             <h2 className="text-lg font-bold">
               Evolução do NPS x Sentimento Geral
             </h2>
-            <Button variant="outline" size="icon" className="border-none">
+            <Button
+              variant="outline"
+              size="icon"
+              className="border-none"
+              onClick={() => openDialog()}
+            >
               <Sparkles className="h-3.5 w-3.5" />
             </Button>
           </div>
