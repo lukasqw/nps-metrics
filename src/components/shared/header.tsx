@@ -1,24 +1,34 @@
+"use client";
+
 import Link from "next/link";
-import { ChartPie, CircleUser, Menu, Search } from "lucide-react";
+import { ChartPie, CircleUser, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import useMenuLinks from "@/hooks/use-menu-links";
 import { ModeToggle } from "../theme/mode-toggle";
+import { deleteCookie } from "cookies-next";
+import { useRouter } from "next/navigation";
 
-const Header = () => {
+export default function Header() {
+  const router = useRouter();
   const menuLinks = useMenuLinks();
 
+  function handleLogout() {
+    // Handle logout logic here
+    deleteCookie("auth-token");
+    router.push("/pages/auth");
+    console.log("Logged out");
+  }
+
   return (
-    <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+    <header className="flex h-14 items-center gap-4 border-b bg-white dark:bg-zinc-950 px-4 lg:h-[60px] lg:px-6">
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="outline" size="icon" className="shrink-0 md:hidden">
@@ -51,7 +61,7 @@ const Header = () => {
         </SheetContent>
       </Sheet>
       <div className="w-full flex-1">
-        <form>
+        {/* <form>
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -60,7 +70,7 @@ const Header = () => {
               className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
             />
           </div>
-        </form>
+        </form> */}
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -70,17 +80,15 @@ const Header = () => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>Settings</DropdownMenuItem>
-          <DropdownMenuItem>Support</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>Logout</DropdownMenuItem>
+          <DropdownMenuLabel>Meu Perfil</DropdownMenuLabel>
+          {/* <DropdownMenuSeparator /> */}
+          {/* <DropdownMenuItem>Settings</DropdownMenuItem>
+          <DropdownMenuItem>Support</DropdownMenuItem> */}
+          {/* <DropdownMenuSeparator />  */}
+          <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
       <ModeToggle />
     </header>
   );
-};
-
-export default Header;
+}

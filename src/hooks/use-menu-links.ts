@@ -1,9 +1,10 @@
-import { Home, LineChart } from "lucide-react";
+import { Home, LineChart, Table } from "lucide-react";
 
 const useMenuLinks = () => {
   const menuLinks = [
-    { href: "#", icon: Home, label: "Dashboard" },
-    { href: "#", icon: LineChart, label: "Analytics" },
+    { href: "/protected/dashboard", icon: Home, label: "Dashboard" },
+    { href: "/protected/comments", icon: Table, label: "Comentários" },
+    { href: "/protected/analytics", icon: LineChart, label: "Analytics" },
   ];
 
   return menuLinks;
