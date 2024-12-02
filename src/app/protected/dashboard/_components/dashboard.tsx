@@ -50,8 +50,9 @@ export function Dashboard() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const companyId = "582c2182-5c69-4a9b-8b84-e4a71972255c";
-        const endDate = new Date("2024-06-30");
+        const companyId = sessionStorage.getItem("companyId") || "";
+        // const endDate = new Date("2024-08-01");
+        const endDate = new Date();
         const startDate = subDays(endDate, parseInt(selectedPeriod));
 
         const formattedStartDate = format(startDate, "yyyy-MM-dd");
