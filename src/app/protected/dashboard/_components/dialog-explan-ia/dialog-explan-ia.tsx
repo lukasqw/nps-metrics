@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import {
   Dialog,
@@ -9,13 +8,11 @@ import {
 } from "@/components/ui/dialog";
 import { useDialog } from "../../context/dialogContext";
 import { LoaderCircle } from "lucide-react";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { ScrollBar } from "@/components/ui/scroll-area";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 
-const fetchAnalysis = async (prompt: string) => {
+const fetchAnalysis = async (prompt: string, signal: AbortSignal) => {
   const resp = await fetch(process.env.NEXT_PUBLIC_AI_URL as string, {
     method: "POST",
     body: JSON.stringify({
@@ -31,6 +28,7 @@ const fetchAnalysis = async (prompt: string) => {
     headers: {
       "Content-Type": "application/json",
     },
+    signal,
   });
 
   return resp;
@@ -64,7 +62,13 @@ const streamResponse = async (
       }
     }
 
-    return reader.read().then(processText);
+    return reader.read().then(processText).catch((error) => {
+      if (error.name === "AbortError") {
+        console.log("Stream reading aborted");
+      } else {
+        console.error("Stream reading error:", error);
+      }
+    });
   });
 };
 
@@ -72,11 +76,14 @@ export function DialogExplanIA() {
   const { isDialogOpen, setDialogOpen, dialogParams } = useDialog();
   const [loading, setLoading] = useState<boolean>(false);
   const [analysisResult, setAnalysisResult] = useState<string>("");
+  const [abortController, setAbortController] = useState<AbortController | null>(null);
 
   useEffect(() => {
     if (isDialogOpen) {
+      const controller = new AbortController();
+      setAbortController(controller);
       setLoading(true);
-      fetchAnalysis(dialogParams.prompt)
+      fetchAnalysis(dialogParams.prompt, controller.signal)
         .then((resp) => streamResponse(resp, setAnalysisResult))
         .finally(() => setLoading(false));
     }
@@ -85,6 +92,7 @@ export function DialogExplanIA() {
   function closeDialog() {
     setDialogOpen(false);
     setAnalysisResult("");
+    abortController?.abort();
   }
 
   return (
@@ -101,12 +109,6 @@ export function DialogExplanIA() {
               <ScrollArea className="max-h-[500px] overflow-y-auto">
                 {analysisResult && (
                   <>
-                    {/* <Markdown
-                      remarkPlugins={[remarkGfm]}
-                      className="leading-7 text-gray-200"
-                    >
-                      {analysisResult}
-                    </Markdown> */}
                     <MarkdownPreview
                       source={analysisResult}
                       style={{ backgroundColor: "transparent" }}
